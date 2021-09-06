@@ -1,2 +1,91 @@
 # ot-cloudfront
 
+[![Opstree Solutions][opstree_avatar]][opstree_homepage]<br/>[Opstree Solutions][opstree_homepage] 
+
+  [opstree_homepage]: https://opstree.github.io/
+  [opstree_avatar]: https://img.cloudposse.com/200x100/https://www.opstree.com/images/og_image8.jpg
+  - This terraform module will create a complete ElastiCache cluster setup.
+  - This project is a part of opstree's ot-aws initiative for terraform modules.
+
+# What is Cloudfront?
+
+
+## Usage
+
+```
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 3.44.0"
+    }
+  }
+}
+
+# Configure the AWS Provider
+provider "aws" {
+  region = "us-east-1"
+}
+
+```
+
+## Inputs
+
+| Name | Description | Type | Default | Required | Supported |
+|------|-------------------|:----:|---------|:--------:|:---------:|
+| acm_certificate_arn | The ARN of the AWS Certificate Manager certificate that you wish to use with this distribution. The ACM certificate must be in US-EAST-1 | `string` | `null` | no | |
+| alias | Aliases, or CNAMES, for the distribution | `list` | `[]` | no | |
+| comment | Any comment about the CloudFront Distribution | `string` | `""` | no | |
+| cloudfront_default_certificate | This variable is not required anymore, being auto generated, left here for compability purposes| `bool` | `true` | no | |
+| default_root_object | The object that you want CloudFront to return (for example, index.html) when an end user requests the root URL | `string` | `""` | no | |
+| custom_error_response | Custom error response to be used in dynamic block |`any` | `[]`| no | |
+| custom_origin_config | Configuration for the custom origin config to be used in dynamic block |`any` | `[]` | `no` | |
+| ordered_cache_behavior | Ordered Cache Behaviors to be used in dynamic block | `any` | `[]` | no | |
+| origin_group | Origin Group to be used in dynamic block | `any` | `[]` | no |  |
+| logging_config | This is the logging configuration for the Cloudfront Distribution.  It is not required.     If you choose to use this configuration, be sure you have the correct IAM and Bucket ACL     rules.  Your tfvars file should follow this syntax:<br><br>    logging_config = [{     bucket = "<your-bucket>"     include_cookies = <true or false>     prefix = "<your-bucket-prefix>"     }] | `any` | `[]` | no | |
+| s3_origin_config  | Configuration for the s3 origin config to be used in dynamic block | `list(map(string))` | `[]` | no | |
+| enable | Whether the distribution is enabled to accept end user requests for content | `bool` | `true` | no | `` |
+| is_ipv6_enabled | Whether the IPv6 is enabled for the distribution | `bool` | `false` | no | `` |
+| http_version | The maximum HTTP version to support on the distribution. Allowed values are http1.1 and http2 | `string` | `http2` | no | `` | 
+| iam_certificate_id | Specifies IAM certificate id for CloudFront distribution | `string` | `null` | no | `` |
+| minimum_protocol_version | The minimum version of the SSL protocol that you want CloudFront to use for HTTPS connections. One of SSLv3, TLSv1, TLSv1_2016, TLSv1.1_2016, TLSv1.2_2018 or TLSv1.2_2019. Default: TLSv1. NOTE: If you are using a custom certificate (specified with acm_certificate_arn or iam_certificate_id), and have specified sni-only in ssl_support_method, TLSv1 or later must be specified. If you have specified vip in ssl_support_method, only SSLv3 or TLSv1 can be specified. If you have specified cloudfront_default_certificate, TLSv1 must be specified. | `string` | `TLSv1` | no | |
+| price_class | The price class of the CloudFront Distribution. Valid types are PriceClass_All, PriceClass_100, PriceClass_200 | `string` | `PriceClass_All` | no | |
+| allowed_methods | Default cache behaviour List of allowed methods (e.g. GET, PUT, POST, DELETE, HEAD) for AWS CloudFront | `list(string)` | `["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]` | no | |
+| cached_methods | Default cache behaviour List of cached methods (e.g. GET, PUT, POST, DELETE, HEAD) | `list(string)` | `["GET", "HEAD"]` | no | |
+| cache_policy_id | The unique identifier of the existing cache policy to attach to the default cache behavior. If not provided, this module will add a default cache policy using other provided inputs. | `string` | `null` | no | |
+| default_ttl | Default amount of time (in seconds) that an object is in a CloudFront cache | `number` | `60` | no | |
+| min_ttl | Minimum amount of time that you want objects to stay in CloudFront caches | `number` | `0` | no | |
+| max_ttl | Maximum amount of time (in seconds) that an object is in a CloudFront cache | `number` | `31536000` | no | |
+| trusted_signers | The AWS accounts, if any, that you want to allow to create signed URLs for private content. 'self' is acceptable. | `list(string)` | `[]` | no | |
+| trusted_key_groups | A list of key group IDs that CloudFront can use to validate signed URLs or signed cookies. | `list(string)` | `[]` | no | |
+| compress | Compress content for web requests that include Accept-Encoding: gzip in the request header | `bool` | `true` | no | |
+| viewer_protocol_policy | Limit the protocol users can use to access content. One of `allow-all`, `https-only`, or `redirect-to-https` | `string` | `redirect-to-https` | no | |
+| realtime_log_config_arn | The ARN of the real-time log configuration that is attached to this cache behavior | `string` | `null` | no | |
+| lambda_function_association | A config block that triggers a lambda@edge function with specific actions | `list(object({ <br/> event_type   = string <br/>include_body = bool <br/> lambda_arn   = string <br/>}))` | `[]` | no | |
+
+
+
+#
+
+## Outputs
+
+| Name | Description |  
+|------|-------------|
+| id | The identifier for the distribution. For example: EDFDVBD632BHDS5. |
+| arn | The ARN (Amazon Resource Name) for the distribution. For example: arn:aws:cloudfront::123456789012:distribution/EDFDVBD632BHDS5, where 123456789012 is your AWS account ID. |
+| caller_reference | Internal value used by CloudFront to allow future updates to the distribution configuration. |
+| status | The current status of the distribution. Deployed if the distribution's information is fully propagated throughout the Amazon CloudFront system. |
+| trusted_signers | The key pair IDs that CloudFront is aware of for each trusted signer, if the distribution is set up to serve private content with signed URLs. |
+| domain_name | The domain name corresponding to the distribution. For example: d604721fxaaqy9.cloudfront.net. |
+| last_modified_time | The date and time the distribution was last modified. |
+| in_progress_validation_batches | The number of invalidation batches currently in progress. |
+| etag | The current version of the distribution's information. For example: E2QWRUHAPOMQZL. |
+| hosted_zone_id | The CloudFront Route 53 zone ID that can be used to route an Alias Resource Record Set to. This attribute is simply an alias for the zone ID Z2FDTNDATAQYW2. |
+
+#
+## Contributors
+
+[![Pawan Chandna][pawan_avatar]][pawan_homepage]<br/>[Pawan Chandna][pawan_homepage]
+
+  [pawan_homepage]: https://gitlab.com/pawan.chandna
+  [pawan_avatar]: https://img.cloudposse.com/75x75/https://gitlab.com/uploads/-/system/user/avatar/7777967/avatar.png?width=400
