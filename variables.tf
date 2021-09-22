@@ -4,7 +4,7 @@ variable "acm_certificate_arn" {
   default     = null
 }
 
-variable "additional_tags" {
+variable "tags" {
   description = "A mapping of additional tags to attach"
   type        = map(string)
   default     = {}
@@ -171,7 +171,7 @@ variable "web_acl_id" {
 // }
 
 ##------------default cache behaviour variable-------------------------------
-
+variable "target_origin_id" {}
 variable "allowed_methods" {
   type        = list(string)
   default     = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
@@ -285,5 +285,9 @@ variable "forward_cookies" {
 variable "forward_header_values" {
   type        = list(string)
   description = "A list of whitelisted header values to forward to the origin (incompatible with `cache_policy_id`)"
-  default     = ["Access-Control-Request-Headers", "Access-Control-Request-Method", "Origin"]
+  default     = ["Accept", "Host", "Origin"]
+}
+
+variable "target_origin_id" {
+  type = string
 }

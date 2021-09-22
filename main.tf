@@ -34,7 +34,7 @@ resource "aws_cloudfront_distribution" "cloudfront_distribution" {
         }
       }
       dynamic "s3_origin_config" {
-        for_each = origin.value.identity == null ? [local.origin_access_identity] : [origin.value.identity]
+        for_each = origin.value.identity == null ? [] : [origin.value.identity]
         content {
           origin_access_identity = s3_origin_config.value
         }
@@ -239,9 +239,8 @@ resource "aws_cloudfront_distribution" "cloudfront_distribution" {
 
   viewer_certificate {
     acm_certificate_arn            = var.acm_certificate_arn
-    iam_certificate_id             = var.iam_certificate_id
-    cloudfront_default_certificate = var.acm_certificate_arn == null && var.iam_certificate_id == null ? true : false
-    ssl_support_method             = var.acm_certificate_arn == null && var.iam_certificate_id == null ? null : "sni-only"
-    minimum_protocol_version       = var.acm_certificate_arn == null && var.iam_certificate_id == null ? "TLSv1" : var.minimum_protocol_version
+    cloudfront_default_certificate = var.acm_certificate_arn == null ? true : false
+    ssl_support_method             = var.acm_certificate_arn == null ? null : "sni-only"
+    minimum_protocol_version       = var.acm_certificate_arn == null ? "TLSv1" : var.minimum_protocol_version
   }
 }

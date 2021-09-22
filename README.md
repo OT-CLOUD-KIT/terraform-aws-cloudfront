@@ -33,6 +33,7 @@ provider "aws" {
 
 | Name | Description | Type | Default | Required | Supported |
 |------|-------------------|:----:|---------|:--------:|:---------:|
+| target_origin_id |  The value of ID for the origin that you want CloudFront to route requests to when a request matches the path pattern either for a cache behavior or for the default cache behavior. | `string` |  | yes | |
 | acm_certificate_arn | The ARN of the AWS Certificate Manager certificate that you wish to use with this distribution. The ACM certificate must be in US-EAST-1 | `string` | `null` | no | |
 | alias | Aliases, or CNAMES, for the distribution | `list` | `[]` | no | |
 | comment | Any comment about the CloudFront Distribution | `string` | `""` | no | |
@@ -61,7 +62,19 @@ provider "aws" {
 | compress | Compress content for web requests that include Accept-Encoding: gzip in the request header | `bool` | `true` | no | |
 | viewer_protocol_policy | Limit the protocol users can use to access content. One of `allow-all`, `https-only`, or `redirect-to-https` | `string` | `redirect-to-https` | no | |
 | realtime_log_config_arn | The ARN of the real-time log configuration that is attached to this cache behavior | `string` | `null` | no | |
-| lambda_function_association | A config block that triggers a lambda@edge function with specific actions | `list(object({ <br/> event_type   = string <br/>include_body = bool <br/> lambda_arn   = string <br/>}))` | `[]` | no | |
+| lambda_function_association | A config block that triggers a lambda@edge function with specific actions | `   list(object({     event_type = string       include_body = bool     lambda_arn = string     }]` | `[]` | no | |
+| function_association | A config block that triggers a cloudfront function with specific actions | `   list(object({     event_type = string     function_arn = string    }]` | `[]` | no | |
+| forward_query_string | Forward query strings to the origin that is associated with this cache behavior (incompatible with `cache_policy_id`) | `bool` | `false` | no | |
+| query_string_cache_keys | When `forward_query_string` is enabled, only the query string keys listed in this argument are cached (incompatible with `cache_policy_id`) | `list(string)` | `[]` | no | |
+| forward_cookies | Specifies whether you want CloudFront to forward all or no cookies to the origin. Can be 'all' or 'none' | `list(string)` | `[]` | no | |
+| forward_header_values | A list of whitelisted header values to forward to the origin (incompatible with `cache_policy_id`) | `list(string)` | `["Accept", "Host", "Origin"]` | no | |
+| restriction\_location | The ISO 3166-1-alpha-2 codes for which you want CloudFront either to distribute your content (whitelist) or not distribute your content (blacklist) | list | `[]` | no |
+| restriction\_type | The restriction type of your CloudFront distribution geolocation restriction. Options include none, whitelist, blacklist | string | `"none"` | no |
+| retain\_on\_delete | Disables the distribution instead of deleting it when destroying the resource through Terraform. If this is set, the distribution needs to be deleted manually afterwards. | bool | `false` | no |
+| ssl\_support\_method | This variable is not required anymore, being auto generated, left here for compability purposes | string | sni-only | no |
+| tag\_name | The tagged name | string | n/a | no |
+| wait\_for\_deployment | If enabled, the resource will wait for the distribution status to change from InProgress to Deployed. Setting this tofalse will skip the process. | bool | `true` | no |
+| webacl | The WAF Web ACL | string | `""` | no |
 
 
 
@@ -71,15 +84,15 @@ provider "aws" {
 
 | Name | Description |  
 |------|-------------|
-| id | The identifier for the distribution. For example: EDFDVBD632BHDS5. |
-| arn | The ARN (Amazon Resource Name) for the distribution. For example: arn:aws:cloudfront::123456789012:distribution/EDFDVBD632BHDS5, where 123456789012 is your AWS account ID. |
+| id | The identifier for the distribution. |
+| arn | The ARN (Amazon Resource Name) for the distribution. |
 | caller_reference | Internal value used by CloudFront to allow future updates to the distribution configuration. |
 | status | The current status of the distribution. Deployed if the distribution's information is fully propagated throughout the Amazon CloudFront system. |
 | trusted_signers | The key pair IDs that CloudFront is aware of for each trusted signer, if the distribution is set up to serve private content with signed URLs. |
-| domain_name | The domain name corresponding to the distribution. For example: d604721fxaaqy9.cloudfront.net. |
+| domain_name | The domain name corresponding to the distribution. For example: d902721fxabcqy9.cloudfront.net. |
 | last_modified_time | The date and time the distribution was last modified. |
 | in_progress_validation_batches | The number of invalidation batches currently in progress. |
-| etag | The current version of the distribution's information. For example: E2QWRUHAPOMQZL. |
+| etag | The current version of the distribution's information. |
 | hosted_zone_id | The CloudFront Route 53 zone ID that can be used to route an Alias Resource Record Set to. This attribute is simply an alias for the zone ID Z2FDTNDATAQYW2. |
 
 #
