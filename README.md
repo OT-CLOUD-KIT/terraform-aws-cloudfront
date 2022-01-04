@@ -4,7 +4,7 @@
 
   [opstree_homepage]: https://opstree.github.io/
   [opstree_avatar]: https://img.cloudposse.com/200x100/https://www.opstree.com/images/og_image8.jpg
-  - This terraform module will create a complete ElastiCache cluster setup.
+  - This terraform module will create a complete Cloudfront setup.
   - This project is a part of opstree's ot-aws initiative for terraform modules.
 
 # What is Cloudfront?
