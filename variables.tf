@@ -148,12 +148,6 @@ variable "ssl_support_method" {
   default     = "sni-only"
 }
 
-variable "tags" {
-  description = "The tagged name"
-  type        = map(string)
-  default     = {}
-}
-
 variable "wait_for_deployment" {
   description = "If enabled, the resource will wait for the distribution status to change from InProgress to Deployed. Setting this tofalse will skip the process."
   type        = bool
@@ -171,7 +165,6 @@ variable "web_acl_id" {
 // }
 
 ##------------default cache behaviour variable-------------------------------
-variable "target_origin_id" {}
 variable "allowed_methods" {
   type        = list(string)
   default     = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
