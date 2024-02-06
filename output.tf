@@ -1,17 +1,29 @@
 output "cloudfront_cache_policies_id" {
   value = {
-    for key, value in var.cloudfront_cache_policies : key => aws_cloudfront_cache_policy.this[key].id
-    if var.cloudfront_cache_policies != null
+    for key, value in aws_cloudfront_cache_policy.this : key => value.id
   }
 }
 
 output "cloudfront_distributions_id" {
   value = {
-    for key, value in var.cloudfront_distributions : key => aws_cloudfront_distribution.this[key].id
+    for key, value in aws_cloudfront_distribution.this : key => value.id
   }
 }
+
 output "cloudfront_distributions_arn" {
   value = {
-    for key, value in var.cloudfront_distributions : key => aws_cloudfront_distribution.this[key].arn
+    for key, value in aws_cloudfront_distribution.this : key => value.arn
+  }
+}
+
+output "cloudfront_request_policies_id" {
+  value = {
+    for key, value in aws_cloudfront_origin_request_policy.this : key => value.id
+  }
+}
+
+output "cloudfront_headers_policies_id" {
+  value = {
+    for key, value in aws_cloudfront_response_headers_policy.this : key => value.id
   }
 }
