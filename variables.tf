@@ -1,286 +1,268 @@
-variable "acm_certificate_arn" {
-  description = "The ARN of the AWS Certificate Manager certificate that you wish to use with this distribution. The ACM certificate must be in US-EAST-1."
-  type        = string
-  default     = null
+variable "cloudfront_distributions" {
+  type = map(object({
+    aliases             = optional(list(string))
+    comment             = optional(string)
+    default_root_object = optional(string)
+    enabled             = optional(bool, true)
+    http_version        = optional(string, "http2")
+    is_ipv6_enabled     = optional(bool, true)
+    price_class         = optional(string)
+    retain_on_delete    = optional(bool, false)
+    wait_for_deployment = optional(bool, true)
+    web_acl_id          = optional(string)
+
+    logging_config = optional(list(object({
+      include_cookies = optional(bool, false)
+      bucket          = string
+      prefix          = optional(string)
+    })), [])
+
+    origin = map(object({
+      domain_name                = string
+      origin_id                  = optional(string)
+      origin_path                = optional(string)
+      connection_attempts        = optional(number, 3)
+      connection_timeout         = optional(number, 10)
+      origin_access_control_id   = optional(string, null)
+      origin_access_control_name = optional(string, null)
+
+      custom_header = optional(list(object({
+        name  = string
+        value = string
+      })), [])
+      origin_shield = optional(list(object({
+        enabled              = bool
+        origin_shield_region = string
+      })), [])
+      s3_origin_config = optional(list(object({
+        origin_access_identity = string
+      })), [])
+
+      custom_origin_config = optional(map(object({
+        http_port                = optional(number, 80)
+        https_port               = optional(number, 443)
+        origin_protocol_policy   = optional(string, "match-viewer")
+        origin_ssl_protocols     = optional(list(string), ["TLSv1"])
+        origin_keepalive_timeout = optional(number)
+        origin_read_timeout      = optional(number)
+
+      })), {})
+    }))
+    origin_group = optional(map(object({
+      origin_id                  = string
+      failover_status_codes      = number
+      primary_member_origin_id   = string
+      secondary_member_origin_id = string
+    })), {})
+
+    default_cache_behavior = map(object({
+      target_origin_id             = string
+      allowed_methods              = optional(list(string), ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"])
+      cached_methods               = optional(list(string), ["GET", "HEAD"])
+      compress                     = optional(bool, false)
+      field_level_encryption_id    = optional(string)
+      smooth_streaming             = optional(bool, false)
+      trusted_signers              = optional(list(string))
+      trusted_key_groups           = optional(list(string))
+      cache_policy_id              = optional(string)
+      cache_policy_name            = optional(string)
+      origin_request_policy_id     = optional(string)
+      origin_request_policy_name   = optional(string)
+      response_headers_policy_id   = optional(string)
+      response_headers_policy_name = optional(string)
+      realtime_log_config_arn      = optional(string)
+      min_ttl                      = optional(number)
+      default_ttl                  = optional(number)
+      max_ttl                      = optional(number)
+      viewer_protocol_policy       = optional(string, "redirect-to-https")
+
+      forwarded_values = optional(map(object({
+        query_string              = optional(bool, false)
+        query_string_cache_keys   = optional(list(string))
+        headers                   = optional(list(string))
+        cookies_forward           = optional(string, "none")
+        cookies_whitelisted_names = optional(list(string))
+
+      })), { "default" = { query_string = false, cookies_forward = "none" } })
+      lambda_function_association = optional(list(object({
+        event_type   = string
+        lambda_arn   = string
+        include_body = optional(bool)
+      })), [])
+
+      function_association = optional(list(object({
+        event_type   = string
+        function_arn = string
+      })), [])
+
+    }))
+
+    ordered_cache_behavior = optional(map(object({
+      target_origin_id             = string
+      path_pattern                 = optional(string)
+      allowed_methods              = optional(list(string), ["GET", "HEAD", "OPTIONS"])
+      cached_methods               = optional(list(string), ["GET", "HEAD", "OPTIONS"])
+      compress                     = optional(bool, false)
+      field_level_encryption_id    = optional(string)
+      smooth_streaming             = optional(bool)
+      trusted_signers              = optional(list(string))
+      trusted_key_groups           = optional(list(string))
+      cache_policy_id              = optional(string)
+      cache_policy_name            = optional(string)
+      origin_request_policy_id     = optional(string)
+      origin_request_policy_name   = optional(string)
+      response_headers_policy_id   = optional(string)
+      response_headers_policy_name = optional(string)
+      realtime_log_config_arn      = optional(string)
+      min_ttl                      = optional(number)
+      default_ttl                  = optional(number)
+      max_ttl                      = optional(number)
+      viewer_protocol_policy       = optional(string, "redirect-to-https")
+
+      forwarded_values = optional(map(object({
+        query_string              = optional(bool, false)
+        query_string_cache_keys   = optional(list(string))
+        headers                   = optional(list(string))
+        cookies_forward           = optional(string, "none")
+        cookies_whitelisted_names = optional(list(string))
+
+      })), { "default" = { query_string = false, cookies_forward = "none" } })
+
+      lambda_function_association = optional(list(object({
+        event_type   = string
+        lambda_arn   = string
+        include_body = optional(bool)
+      })), [])
+
+      function_association = optional(list(object({
+        event_type   = string
+        function_arn = string
+      })), [])
+
+    })), {})
+
+    viewer_certificate = optional(object({
+      acm_certificate_arn            = optional(string)
+      cloudfront_default_certificate = optional(bool, true)
+      iam_certificate_id             = optional(string)
+      minimum_protocol_version       = optional(string, "TLSv1.2_2021")
+      ssl_support_method             = optional(string)
+    }), {})
+
+    custom_error_response = optional(map(object({
+      error_code            = number
+      response_code         = optional(number)
+      response_page_path    = optional(string)
+      error_caching_min_ttl = optional(number)
+    })), {})
+
+    geo_restriction = optional(map(object({
+      restriction_type = string
+      locations        = list(string)
+    })), { "allow all" = { restriction_type = "none", locations = [] } })
+
+    tags = optional(map(string))
+  }))
 }
 
-variable "tags" {
-  description = "A mapping of additional tags to attach"
-  type        = map(string)
-  default     = {}
+variable "cloudfront_cache_policies" {
+  type = map(object({
+    comment                       = optional(string)
+    default_ttl                   = optional(number, 50)
+    max_ttl                       = optional(number, 100)
+    min_ttl                       = optional(number, 1)
+    cookies_config_behavior       = string
+    cookies_config_items          = optional(list(string), [])
+    headers_config_behavior       = string
+    headers_config_items          = optional(list(string), [])
+    query_strings_config_behavior = string
+    query_strings_config_items    = optional(list(string), [])
+    enable_accept_encoding_brotli = optional(bool, false)
+    enable_accept_encoding_gzip   = optional(bool, false)
+  }))
 }
 
-variable "alias" {
-  description = "Aliases, or CNAMES, for the distribution"
-  type        = list(any)
-  default     = []
+variable "cloudfront_origin_request_policies" {
+  type = map(object({
+    comment                       = optional(string)
+    cookies_config_behavior       = string
+    cookies_config_items          = optional(list(string), [])
+    headers_config_behavior       = string
+    headers_config_items          = optional(list(string), [])
+    query_strings_config_behavior = string
+    query_strings_config_items    = optional(list(string), [])
+  }))
 }
 
-variable "cloudfront_default_certificate" {
-  description = "This variable is not required anymore, being auto generated, left here for compability purposes"
-  type        = bool
-  default     = true
-}
 
-variable "comment" {
-  description = "Any comment about the CloudFront Distribution"
-  type        = string
-  default     = ""
-}
+variable "cloudfront_response_headers_policies" {
+  type = map(object({
+    comment = optional(string)
+    cors_config = optional(list(object({
+      access_control_allow_credentials = bool
+      access_control_allow_headers     = list(string)
+      access_control_allow_methods     = list(string)
+      access_control_allow_origins     = list(string)
+      access_control_max_age_sec       = optional(number)
+      origin_override                  = bool
+    })), [])
 
-variable "default_root_object" {
-  description = "The object that you want CloudFront to return (for example, index.html) when an end user requests the root URL"
-  type        = string
-  default     = null
-}
+    custom_headers_config = optional(list(object({
+      header   = string
+      override = bool
+      value    = string
+    })), [])
 
-variable "custom_error_response" {
-  description = "Custom error response to be used in dynamic block"
-  type        = any
-  default     = []
-}
+    security_headers_config = optional(list(object({
+      content_security_policy = optional(list(object({
+        content_security_policy = string
+        override                = bool
+      })), [])
 
-variable "custom_origin_config" {
-  description = "Configuration for the custom origin config to be used in dynamic block"
-  type        = any
-  default     = []
-}
+      content_type_options = optional(list(object({
+        override = bool
+      })), [])
 
-variable "ordered_cache_behavior" {
-  description = "Ordered Cache Behaviors to be used in dynamic block"
-  type        = any
-  default     = []
-}
+      frame_options = optional(list(object({
+        frame_option = string
+        override     = bool
+      })), [])
 
-variable "origin_group" {
-  description = "Origin Group to be used in dynamic block"
-  type        = any
-  default     = []
-}
+      referrer_policy = optional(list(object({
+        referrer_policy = string
+        override        = bool
+      })), [])
 
-variable "logging_config" {
-  description = <<EOF
-    This is the logging configuration for the Cloudfront Distribution.  It is not required.
-    If you choose to use this configuration, be sure you have the correct IAM and Bucket ACL
-    rules.  Your tfvars file should follow this syntax:
-    logging_config = [{
-    bucket = "<your-bucket>"
-    include_cookies = <true or false>
-    prefix = "<your-bucket-prefix>"
-    }]
-    EOF
+      strict_transport_security = optional(list(object({
+        access_control_max_age_sec = number
+        include_subdomains         = optional(bool)
+        override                   = bool
+        preload                    = optional(bool)
+      })), [])
 
-  type    = any
-  default = []
-}
+      xss_protection = optional(list(object({
+        mode_block = bool
+        override   = bool
+        protection = bool
+        report_uri = optional(string)
+      })), [])
+    })), [])
 
-variable "s3_origin_config" {
-  description = "Configuration for the s3 origin config to be used in dynamic block"
-  type        = any
-  default     = []
-}
-
-variable "enable" {
-  description = "Whether the distribution is enabled to accept end user requests for content"
-  type        = bool
-  default     = true
-}
-
-variable "is_ipv6_enabled" {
-  description = "Whether the IPv6 is enabled for the distribution"
-  type        = bool
-  default     = false
-}
-
-variable "http_version" {
-  description = "The maximum HTTP version to support on the distribution. Allowed values are http1.1 and http2"
-  type        = string
-  default     = "http2"
-}
-
-variable "iam_certificate_id" {
-  description = "Specifies IAM certificate id for CloudFront distribution"
-  type        = string
-  default     = null
-}
-
-variable "minimum_protocol_version" {
-  description = <<EOF
-    The minimum version of the SSL protocol that you want CloudFront to use for HTTPS connections.
-    One of SSLv3, TLSv1, TLSv1_2016, TLSv1.1_2016,TLSv1.2_2018 or TLSv1.2_2019. Default: TLSv1.
-    NOTE: If you are using a custom certificate (specified with acm_certificate_arn or iam_certificate_id),
-    and have specified sni-only in ssl_support_method, TLSv1 or later must be specified.
-    If you have specified vip in ssl_support_method, only SSLv3 or TLSv1 can be specified.
-    If you have specified cloudfront_default_certificate, TLSv1 must be specified.
-    EOF
-
-  type    = string
-  default = "TLSv1"
-}
-
-variable "price_class" {
-  description = "The price class of the CloudFront Distribution.  Valid types are PriceClass_All, PriceClass_100, PriceClass_200"
-  type        = string
-  default     = "PriceClass_All"
-}
-
-variable "restriction_location" {
-  description = "The ISO 3166-1-alpha-2 codes for which you want CloudFront either to distribute your content (whitelist) or not distribute your content (blacklist)"
-  type        = list(any)
-  default     = []
-}
-
-variable "restriction_type" {
-  description = "The restriction type of your CloudFront distribution geolocation restriction. Options include none, whitelist, blacklist"
-  type        = string
-  default     = "none"
-}
-
-variable "retain_on_delete" {
-  description = "Disables the distribution instead of deleting it when destroying the resource through Terraform. If this is set, the distribution needs to be deleted manually afterwards."
-  type        = bool
-  default     = false
-}
-
-variable "ssl_support_method" {
-  description = "This variable is not required anymore, being auto generated, left here for compability purposes"
-  type        = string
-  default     = "sni-only"
-}
-
-variable "wait_for_deployment" {
-  description = "If enabled, the resource will wait for the distribution status to change from InProgress to Deployed. Setting this tofalse will skip the process."
-  type        = bool
-  default     = true
-}
-
-variable "web_acl_id" {
-  description = "The WAF Web ACL"
-  type        = string
-  default     = ""
-}
-
-// variable origin_group_member {
-//   type = any
-// }
-
-##------------default cache behaviour variable-------------------------------
-variable "allowed_methods" {
-  type        = list(string)
-  default     = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
-  description = "List of allowed methods (e.g. GET, PUT, POST, DELETE, HEAD) for AWS CloudFront"
-}
-
-variable "cached_methods" {
-  type        = list(string)
-  default     = ["GET", "HEAD"]
-  description = "List of cached methods (e.g. GET, PUT, POST, DELETE, HEAD)"
-}
-
-variable "cache_policy_id" {
-  type        = string
-  default     = null
-  description = <<-EOT
-    The unique identifier of the existing cache policy to attach to the default cache behavior.
-    If not provided, this module will add a default cache policy using other provided inputs.
-    EOT
-}
-
-variable "default_ttl" {
-  type        = number
-  default     = 60
-  description = "Default amount of time (in seconds) that an object is in a CloudFront cache"
-}
-
-variable "min_ttl" {
-  type        = number
-  default     = 0
-  description = "Minimum amount of time that you want objects to stay in CloudFront caches"
-}
-
-variable "max_ttl" {
-  type        = number
-  default     = 31536000
-  description = "Maximum amount of time (in seconds) that an object is in a CloudFront cache"
-}
-
-variable "trusted_signers" {
-  type        = list(string)
-  default     = []
-  description = "The AWS accounts, if any, that you want to allow to create signed URLs for private content. 'self' is acceptable."
-}
-
-variable "trusted_key_groups" {
-  type        = list(string)
-  default     = []
-  description = "A list of key group IDs that CloudFront can use to validate signed URLs or signed cookies."
-}
-
-variable "compress" {
-  type        = bool
-  default     = true
-  description = "Compress content for web requests that include Accept-Encoding: gzip in the request header"
-}
-
-variable "viewer_protocol_policy" {
-  type        = string
-  description = "Limit the protocol users can use to access content. One of `allow-all`, `https-only`, or `redirect-to-https`"
-  default     = "redirect-to-https"
-}
-
-variable "realtime_log_config_arn" {
-  type        = string
-  default     = null
-  description = "The ARN of the real-time log configuration that is attached to this cache behavior"
-}
-
-variable "lambda_function_association" {
-  type = list(object({
-    event_type   = string
-    include_body = bool
-    lambda_arn   = string
+    server_timing_headers_config = optional(list(object({
+      enabled       = bool
+      sampling_rate = number
+    })), [])
   }))
 
-  description = "A config block that triggers a lambda@edge function with specific actions"
-  default     = []
 }
 
-variable "function_association" {
-  type = list(object({
-    event_type   = string
-    function_arn = string
+variable "cloudfront_origin_access_controls" {
+  type = map(object({
+    name                              = optional(string)
+    description                       = optional(string)
+    origin_access_control_origin_type = optional(string, "s3")
+    signing_behavior                  = optional(string, "always")
+    signing_protocol                  = optional(string, "sigv4")
   }))
-
-  description = <<-EOT
-    A config block that triggers a CloudFront function with specific actions.
-    See the [aws_cloudfront_distribution](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudfront_distribution#function-association)
-    documentation for more information.
-  EOT
-  default     = []
-}
-variable "forward_query_string" {
-  type        = bool
-  default     = false
-  description = "Forward query strings to the origin that is associated with this cache behavior (incompatible with `cache_policy_id`)"
-}
-
-variable "query_string_cache_keys" {
-  type        = list(string)
-  description = "When `forward_query_string` is enabled, only the query string keys listed in this argument are cached (incompatible with `cache_policy_id`)"
-  default     = []
-}
-variable "forward_cookies" {
-  type        = string
-  default     = "none"
-  description = "Specifies whether you want CloudFront to forward all or no cookies to the origin. Can be 'all' or 'none'"
-}
-
-variable "forward_header_values" {
-  type        = list(string)
-  description = "A list of whitelisted header values to forward to the origin (incompatible with `cache_policy_id`)"
-  default     = ["Accept", "Host", "Origin"]
-}
-
-variable "target_origin_id" {
-  type = string
+  default = {}
 }
