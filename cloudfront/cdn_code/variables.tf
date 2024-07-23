@@ -1,6 +1,6 @@
 variable "cloudfront_distributions" {
   type = map(object({
-    #    aliases             = optional(list(string))
+    aliases             = optional(list(string))
     comment             = optional(string)
     default_root_object = optional(string)
     enabled             = optional(bool, true)
@@ -142,7 +142,7 @@ variable "cloudfront_distributions" {
     })), {})
 
     viewer_certificate = optional(object({
-      # acm_certificate_arn            = optional(string)
+      acm_certificate_arn            = optional(string)
       cloudfront_default_certificate = optional(bool, true)
       iam_certificate_id             = optional(string)
       minimum_protocol_version       = optional(string, "TLSv1.2_2021")
