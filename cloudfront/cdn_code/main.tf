@@ -1,6 +1,6 @@
 resource "aws_cloudfront_distribution" "this" {
   for_each = var.cloudfront_distributions
-  #  aliases             = each.value.aliases
+  aliases             = each.value.aliases
   comment             = each.value.comment != null ? each.value.comment : each.key
   default_root_object = each.value.default_root_object
   enabled             = each.value.enabled
@@ -211,7 +211,7 @@ resource "aws_cloudfront_distribution" "this" {
   }
 
   viewer_certificate {
-    # acm_certificate_arn            = each.value.viewer_certificate.acm_certificate_arn
+    acm_certificate_arn            = each.value.viewer_certificate.acm_certificate_arn
     cloudfront_default_certificate = each.value.viewer_certificate.cloudfront_default_certificate
     iam_certificate_id             = each.value.viewer_certificate.iam_certificate_id
     minimum_protocol_version       = each.value.viewer_certificate.minimum_protocol_version
