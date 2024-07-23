@@ -1,5 +1,5 @@
 cloudfront_cache_policies = {
-  "cache_policy" = {
+  "cache_policy_name" = {
     comment                       = "Optimized caching policy"
     cookies_config_behavior       = "none"
     headers_config_behavior       = "none"
@@ -8,7 +8,7 @@ cloudfront_cache_policies = {
 }
 
 cloudfront_origin_request_policies = {
-  "origin_request_policy" = {
+  "origin_request_policy_name" = {
     comment                       = "CORS policy for custom origin"
     cookies_config_behavior       = "none"
     headers_config_behavior       = "none"
@@ -17,7 +17,7 @@ cloudfront_origin_request_policies = {
 }
 
 cloudfront_response_headers_policies = {
-  "response_header_policy" = {
+  "response_header_policy_name" = {
     comment = "Simple CORS headers policy"
     cors_config = [{
       access_control_allow_credentials = true
@@ -30,7 +30,7 @@ cloudfront_response_headers_policies = {
 }
 
 cloudfront_distributions = {
-  "name of the distribution" = {
+  "name_of_the_cloudfront_distribution" = {
     aliases             = ["aliases if any"]
     viewer_certificate = {
       acm_certificate_arn            = "acm certificate arn"
@@ -39,7 +39,7 @@ cloudfront_distributions = {
       minimum_protocol_version       = "TLSv1.2_2021"
     }
     origin = {
-      "origin name" = {
+      "origin_name" = {
         domain_name = "domain name"
         custom_origin_config = {
           a = {
