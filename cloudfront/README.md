@@ -897,7 +897,7 @@ cloudfront_distributions = {
 
 ## Use Cases:
 
-1- [Setup of Cloud Front without acm certificate and with default policies](hhttps://github.com/OT-CLOUD-KIT/terraform-aws-cloudfront/tree/shreya_cdn/cloudfront/example/without_acm_certificate)
+1- [Setup of Cloud Front without acm certificate and with default policies](https://github.com/OT-CLOUD-KIT/terraform-aws-cloudfront/tree/shreya_cdn/cloudfront/example/without_acm_certificate)
 
   This example demonstrates a basic setup of AWS CloudFront using Terraform without **acm certificate arn** and with default **policies**. It covers essential configurations to get started with CloudFront in your AWS environment.
 
