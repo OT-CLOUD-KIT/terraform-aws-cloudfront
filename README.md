@@ -2,12 +2,12 @@
 
 
 
-> A Terraform module to create a fully configurable and production-ready AWS CloudFront distribution with support for S3 and custom origins, caching policies, WAF integration, Lambda@Edge, error handling, and more.
+A Terraform module to create a fully configurable and production-ready AWS CloudFront distribution with support for S3 and custom origins, caching policies, WAF integration, Lambda@Edge, error handling, and more.
 
----
+
 
 ## Architecture
-
+![cloud_front drawio](https://github.com/user-attachments/assets/8f66f766-8706-45ca-8053-2893ff016ece)
 
 
 > **Note:**  
