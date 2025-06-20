@@ -1,5 +1,5 @@
 module "network" {
-  source                               = "./cdn_code"
+  source                               = "../"
   cloudfront_distributions             = var.cloudfront_distributions
   cloudfront_cache_policies            = var.cloudfront_cache_policies
   cloudfront_origin_request_policies   = var.cloudfront_origin_request_policies
