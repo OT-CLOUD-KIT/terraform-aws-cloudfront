@@ -27,14 +27,107 @@ A Terraform module to create a fully configurable and production-ready AWS Cloud
 ## Usage
 
 ```hcl
-module "network" {
-  source                               = "../"
-  cloudfront_distributions             = var.cloudfront_distributions
-  cloudfront_cache_policies            = var.cloudfront_cache_policies
-  cloudfront_origin_request_policies   = var.cloudfront_origin_request_policies
-  cloudfront_response_headers_policies = var.cloudfront_response_headers_policies
-  cloudfront_origin_access_controls    = var.cloudfront_origin_access_controls
+module "cloudfront" {
+  source = "../" 
+
+  cloudfront_distributions = {
+    ot_cloud_distribution = {
+      aliases             = []
+      comment             = "OT CloudKit Static Website Distribution"
+      default_root_object = "index.html"
+      enabled             = true
+      http_version        = "http2"
+      is_ipv6_enabled     = true
+      price_class         = "PriceClass_100"
+      wait_for_deployment = true
+
+      origin = {
+        ot-cloud-kit-static-website = {
+          domain_name = "ot-cloud-kit-static-website.s3.us-east-1.amazonaws.com"
+
+          custom_origin_config = {
+            a = {
+              http_port              = 80
+              origin_protocol_policy = "http-only"
+            }
+          }
+        }
+      }
+
+      default_cache_behavior = {
+        default_cache_behavior = {
+          target_origin_id         = "ot-cloud-kit-static-website"
+          viewer_protocol_policy   = "redirect-to-https"
+          allowed_methods          = ["GET", "HEAD"]
+          cached_methods           = ["GET", "HEAD"]
+          cache_policy_id          = "cache_policy"
+          origin_request_policy_id = "origin_request_policy"
+          response_headers_policy_id = "response_header_policy"
+        }
+      }
+
+      viewer_certificate = {
+        acm_certificate_arn            = null
+        cloudfront_default_certificate = true
+        ssl_support_method             = "sni-only"
+        minimum_protocol_version       = "TLSv1.2_2021"
+      }
+
+      ordered_cache_behavior = {}
+
+      geo_restriction = {
+        "allow all" = {
+          restriction_type = "none"
+          locations        = []
+        }
+      }
+
+      tags = {
+        Environment = "prod"
+        ManagedBy   = "Terraform"
+      }
+    }
+  }
+
+  cloudfront_cache_policies = {
+    cache_policy = {
+      comment                       = "Optimized caching policy"
+      default_ttl                   = 60
+      max_ttl                       = 600
+      min_ttl                       = 0
+      cookies_config_behavior       = "none"
+      headers_config_behavior       = "none"
+      query_strings_config_behavior = "none"
+      enable_accept_encoding_brotli = true
+      enable_accept_encoding_gzip   = true
+    }
+  }
+
+  cloudfront_origin_request_policies = {
+    origin_request_policy = {
+      comment                       = "CORS policy for custom origin"
+      cookies_config_behavior       = "none"
+      headers_config_behavior       = "none"
+      query_strings_config_behavior = "none"
+    }
+  }
+
+  cloudfront_response_headers_policies = {
+    response_header_policy = {
+      comment = "Simple CORS headers policy"
+      cors_config = [{
+        access_control_allow_credentials = true
+        access_control_allow_headers     = ["Content-Type", "Authorization"]
+        access_control_allow_methods     = ["GET", "POST"]
+        access_control_allow_origins     = ["*"]
+        origin_override                  = true
+      }]
+    }
+  }
+
+  cloudfront_origin_access_controls = {}
 }
+
 ```
 
 
