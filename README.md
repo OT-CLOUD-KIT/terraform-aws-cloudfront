@@ -7,7 +7,7 @@ A Terraform module to create a fully configurable and production-ready AWS Cloud
 
 
 ## Architecture
-![cloud_front drawio](https://github.com/user-attachments/assets/8f66f766-8706-45ca-8053-2893ff016ece)
+![cloud front](https://github.com/user-attachments/assets/3a580e16-8118-4fd4-991e-b413d3c0eb18)
 
 
 > **Note:**  
