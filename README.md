@@ -129,7 +129,8 @@ module "cloudfront" {
 }
 
 ```
-
+> **Note:**  
+> The above example demonstrates how to use the module. All variables, resources, and outputs used here are already defined within this module.
 
 
 ### Resources
