@@ -28,7 +28,7 @@ A Terraform module to create a fully configurable and production-ready AWS Cloud
 
 ```hcl
 module "cloudfront" {
-  source = "../" 
+  source = "OT-CLOUD-KIT/terraform-aws-cloudfront" 
 
   cloudfront_distributions = {
     ot_cloud_distribution = {

@@ -1,5 +1,5 @@
 module "network" {
-  source                               = "../"
+  source                               = "git@github.com:OT-CLOUD-KIT/terraform-aws-cloudfront.git?ref=Feature"
   cloudfront_distributions             = var.cloudfront_distributions
   cloudfront_cache_policies            = var.cloudfront_cache_policies
   cloudfront_origin_request_policies   = var.cloudfront_origin_request_policies
